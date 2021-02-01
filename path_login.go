@@ -197,8 +197,10 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeConfig) error {
 	}
 
 	// Run must be active
-	if run.Data.Attributes.Status != "applying" {
-		return fmt.Errorf("Run ID status is not \"applying\"")
+	if run.Data.Attributes.Status != "applying" &&
+		run.Data.Attributes.Status != "planning" {
+		msg := fmt.Sprintf("Run ID status is %s. Expected planning or applying", run.Data.Attributes.Status)
+		return fmt.Errorf(msg)
 	}
 
 	if run.Data.Relationships.Workspace.Data.ID != workspace.Data.ID {
