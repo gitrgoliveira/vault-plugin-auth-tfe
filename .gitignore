@@ -1,2 +1,4 @@
 
 vault/plugins/vault-plugin-auth-tfe
+terraform/api-testing/.terraform/
+terraform/demo/.terraform/
