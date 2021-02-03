@@ -5,6 +5,7 @@ data "external" "vault_login" {
   program = ["bash", "${path.module}/vault_login.sh"]
   query = {
     role = "workspace_role"
+    VAULT_ADDR = "http://88.97.2.109:8200"
   }
 }
 
