@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-cleanhttp"
+	log "github.com/hashicorp/go-hclog"
 )
 
 type RunInfo struct {
@@ -44,6 +45,13 @@ func fetchRunInfo(login *tfeLogin, config *tfeConfig) (*RunInfo, error) {
 	}
 
 	url := fmt.Sprintf("https://%s/api/v2/runs/%s", strings.TrimSuffix(config.Host, "/"), login.RunID)
+
+	log.L().Info(
+		fmt.Sprintf("reaching out to url %s", url),
+		"info", nil)
+	log.L().Info(
+		fmt.Sprintf("with %s", login.AtlasToken),
+		"info", nil)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -139,6 +147,13 @@ func fetchWorkspaceInfo(login *tfeLogin, config *tfeConfig) (*WorkspaceInfo, err
 	url := fmt.Sprintf("https://%s/api/v2/organizations/%s/workspaces/%s",
 		strings.TrimSuffix(config.Host, "/"), config.Organization, login.Workspace)
 
+	log.L().Info(
+		fmt.Sprintf("reaching out to url %s", url),
+		"info", nil)
+	log.L().Info(
+		fmt.Sprintf("with %s", login.AtlasToken),
+		"info", nil)
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -204,6 +219,10 @@ func fetchAccountInfo(login *tfeLogin, config *tfeConfig) (*AccountInfo, error) 
 
 	url := fmt.Sprintf("https://%s/api/v2/account/details",
 		strings.TrimSuffix(config.Host, "/"))
+
+	log.L().Info(
+		fmt.Sprintf("reaching out to url %s", url),
+		"info", nil)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

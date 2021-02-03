@@ -18,9 +18,13 @@ build:
 	GOOS=$(OS) GOARCH="$(GOARCH)" go build -o vault/plugins/vault-plugin-auth-tfe cmd/vault-plugin-auth-tfe/main.go
 
 start:
-	vault server -dev -dev-root-token-id=root -dev-plugin-dir=./vault/plugins -log-level=debug
+	vault server -dev -dev-root-token-id=root \
+	-dev-plugin-dir=./vault/plugins -log-level=debug \
+	-dev-listen-address=192.168.178.40:8200
 
 enable:
+# fad4d28b6f57ca6a1acd49b948e0a279d805280c461bb29fcb8781e57c1c3562
+	# vault plugin register -sha256=fad4d28b6f57ca6a1acd49b948e0a279d805280c461bb29fcb8781e57c1c3562 auth vault-plugin-auth-tfe
 	vault auth enable -path=tfe-auth vault-plugin-auth-tfe
 
 clean:

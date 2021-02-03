@@ -1,0 +1,145 @@
+{
+  "data": {
+    "id": "run-U7VpRnrDSGhyk8Ff",
+    "type": "runs",
+    "attributes": {
+      "actions": {
+        "is-cancelable": true,
+        "is-confirmable": false,
+        "is-discardable": false,
+        "is-force-cancelable": false
+      },
+      "canceled-at": null,
+      "created-at": "2021-01-31T17:32:29.389Z",
+      "has-changes": true,
+      "is-destroy": false,
+      "message": "Queued manually using Terraform",
+      "plan-only": false,
+      "source": "terraform",
+      "status-timestamps": {
+        "planned-at": "2021-01-31T17:32:41+00:00",
+        "applying-at": "2021-01-31T17:32:43+00:00",
+        "planning-at": "2021-01-31T17:32:30+00:00",
+        "confirmed-at": "2021-01-31T17:32:42+00:00",
+        "plan-queued-at": "2021-01-31T17:32:29+00:00",
+        "apply-queued-at": "2021-01-31T17:32:42+00:00",
+        "plan-queueable-at": "2021-01-31T17:32:29+00:00"
+      },
+      "status": "applying",
+      "trigger-reason": "manual",
+      "target-addrs": null,
+      "permissions": {
+        "can-apply": false,
+        "can-cancel": false,
+        "can-comment": false,
+        "can-discard": false,
+        "can-force-execute": false,
+        "can-force-cancel": false,
+        "can-override-policy-check": false
+      }
+    },
+    "relationships": {
+      "comments": {
+        "data": [],
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/comments"
+        }
+      },
+      "workspace": {
+        "data": {
+          "id": "ws-iabb32pCqyGmB4Xf",
+          "type": "workspaces"
+        }
+      },
+      "apply": {
+        "data": {
+          "id": "apply-NuukDBMg4TXsuMZr",
+          "type": "applies"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/apply"
+        }
+      },
+      "configuration-version": {
+        "data": {
+          "id": "cv-CwngByBqisLp4P2Y",
+          "type": "configuration-versions"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/configuration-version"
+        }
+      },
+      "confirmed-by": {
+        "data": {
+          "id": "user-DvF7XriFBxta9VqW",
+          "type": "users"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/confirmed-by"
+        }
+      },
+      "created-by": {
+        "data": {
+          "id": "user-DvF7XriFBxta9VqW",
+          "type": "users"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/created-by"
+        }
+      },
+      "plan": {
+        "data": {
+          "id": "plan-mvieMYhg9pPSaxoB",
+          "type": "plans"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/plan"
+        }
+      },
+      "run-events": {
+        "data": [
+          {
+            "id": "re-89TXE6oeuJoSirCd",
+            "type": "run-events"
+          },
+          {
+            "id": "re-UysrpMj9SKAjSHPn",
+            "type": "run-events"
+          },
+          {
+            "id": "re-rVmf6JjjYaDCv5tv",
+            "type": "run-events"
+          },
+          {
+            "id": "re-R8zVp4J7BtnPkryc",
+            "type": "run-events"
+          },
+          {
+            "id": "re-xArQSKG7QUuLSB1i",
+            "type": "run-events"
+          },
+          {
+            "id": "re-XKdUCmqFnwRbv9RP",
+            "type": "run-events"
+          },
+          {
+            "id": "re-1zPmE8eggEY3dZbb",
+            "type": "run-events"
+          }
+        ],
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/run-events"
+        }
+      },
+      "policy-checks": {
+        "data": [],
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff/policy-checks"
+        }
+      }
+    },
+    "links": {
+      "self": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff"
+    }
+  }
+}

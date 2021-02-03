@@ -181,20 +181,27 @@ type tfeLogin struct {
 }
 
 func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeConfig) error {
+
 	run, err := fetchRunInfo(t, config)
 	if err != nil {
-		return err
+		msg := fmt.Sprintf("Error fetching Run Info: %s", string(err.Error()))
+		return fmt.Errorf(msg)
 	}
 
 	workspace, err := fetchWorkspaceInfo(t, config)
 	if err != nil {
-		return err
+		msg := fmt.Sprintf("Error fetching Workspace Info: %s", string(err.Error()))
+		return fmt.Errorf(msg)
 	}
 
 	account, err := fetchAccountInfo(t, config)
 	if err != nil {
-		return err
+		msg := fmt.Sprintf("Error fetching Account Info: %s", string(err.Error()))
+		return fmt.Errorf(msg)
 	}
+
+	msg := fmt.Sprintf("Run status is %s", run.Data.Attributes.Status)
+	log.L().Info(msg, "info", nil)
 
 	// Run must be active
 	if run.Data.Attributes.Status != "applying" &&
@@ -204,18 +211,13 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeConfig) error {
 	}
 
 	if run.Data.Relationships.Workspace.Data.ID != workspace.Data.ID {
-		return fmt.Errorf("Run ID and workspace ID mismatch")
-	}
-	if run.Data.ID != workspace.Data.Relationships.CurrentRun.Data.ID {
-		return fmt.Errorf("Run ID and workspace current Run ID mismatch")
+		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.Data.Relationships.Workspace.Data.ID, workspace.Data.ID)
+		return fmt.Errorf(msg)
 	}
 
 	log.L().Info(string(run.Data.ID), "info", nil)
 	log.L().Info(string(workspace.Data.ID), "info", nil)
 	log.L().Info(string(account.Data.ID), "info", nil)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }

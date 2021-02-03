@@ -1,0 +1,40 @@
+{
+  "data": {
+    "id": "user-YeDY3vZi4NrTrsdT",
+    "type": "users",
+    "attributes": {
+      "username": "api-org-org2-GUUO6S93ME",
+      "is-service-account": true,
+      "avatar-url": "https://www.gravatar.com/avatar/05b4f3f874765365f6abd184c0015968?s=100&d=mm",
+      "password": null,
+      "enterprise-support": true,
+      "is-site-admin": false,
+      "is-sso-login": false,
+      "two-factor": {
+        "enabled": false,
+        "verified": false
+      },
+      "email": "api-org-org2-guuo6s93me@hashicorp.com",
+      "unconfirmed-email": null,
+      "has-git-hub-app-token": false,
+      "is-confirmed": true,
+      "is-sudo": false,
+      "permissions": {
+        "can-create-organizations": false,
+        "can-change-email": true,
+        "can-change-username": true,
+        "can-manage-user-tokens": false
+      }
+    },
+    "relationships": {
+      "authentication-tokens": {
+        "links": {
+          "related": "/api/v2/users/user-YeDY3vZi4NrTrsdT/authentication-tokens"
+        }
+      }
+    },
+    "links": {
+      "self": "/api/v2/users/user-YeDY3vZi4NrTrsdT"
+    }
+  }
+}

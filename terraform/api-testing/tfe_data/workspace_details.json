@@ -1,0 +1,95 @@
+{
+  "data": {
+    "id": "ws-iabb32pCqyGmB4Xf",
+    "type": "workspaces",
+    "attributes": {
+      "name": "tfe-gcp-test-network",
+      "auto-apply": false,
+      "created-at": "2021-01-29T10:25:13.711Z",
+      "environment": "default",
+      "locked": true,
+      "queue-all-runs": false,
+      "terraform-version": "0.14.5",
+      "working-directory": null,
+      "speculative-enabled": true,
+      "allow-destroy-plan": true,
+      "auto-destroy-at": null,
+      "latest-change-at": "2021-01-31T17:31:07.862Z",
+      "operations": true,
+      "execution-mode": "remote",
+      "vcs-repo": null,
+      "vcs-repo-identifier": null,
+      "permissions": {
+        "can-update": false,
+        "can-destroy": false,
+        "can-queue-destroy": false,
+        "can-queue-run": false,
+        "can-queue-apply": false,
+        "can-read-state-versions": true,
+        "can-create-state-versions": true,
+        "can-read-variable": false,
+        "can-update-variable": false,
+        "can-lock": false,
+        "can-unlock": false,
+        "can-force-unlock": false,
+        "can-read-settings": false
+      },
+      "actions": {
+        "is-destroyable": true
+      },
+      "description": null,
+      "file-triggers-enabled": true,
+      "trigger-prefixes": [],
+      "source": "terraform",
+      "source-name": null,
+      "source-url": null
+    },
+    "relationships": {
+      "organization": {
+        "data": {
+          "id": "org2",
+          "type": "organizations"
+        }
+      },
+      "locked-by": {
+        "data": {
+          "id": "run-U7VpRnrDSGhyk8Ff",
+          "type": "runs"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff"
+        }
+      },
+      "current-run": {
+        "data": {
+          "id": "run-U7VpRnrDSGhyk8Ff",
+          "type": "runs"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff"
+        }
+      },
+      "latest-run": {
+        "data": {
+          "id": "run-U7VpRnrDSGhyk8Ff",
+          "type": "runs"
+        },
+        "links": {
+          "related": "/api/v2/runs/run-U7VpRnrDSGhyk8Ff"
+        }
+      },
+      "current-state-version": {
+        "data": {
+          "id": "sv-y3ivDifqgw74Kpgs",
+          "type": "state-versions"
+        },
+        "links": {
+          "related": "/api/v2/workspaces/ws-iabb32pCqyGmB4Xf/current-state-version"
+        }
+      }
+    },
+    "links": {
+      "self": "/api/v2/organizations/org2/workspaces/tfe-gcp-test-network"
+    }
+  }
+}
