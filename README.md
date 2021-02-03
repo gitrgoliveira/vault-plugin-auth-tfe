@@ -28,6 +28,7 @@ $ vault write auth/tfe-auth/config organization=tfc_org
 # Add login roles
 $ vault write auth/tfe-auth/role/workspace_role workspaces=* policies=default
 
+
 ```
 
 To login using the tfe auth method:
@@ -39,3 +40,5 @@ $ vault write auth/tfe-auth/login role=workspace_role \
 		atlas-token=$ATLAS_TOKEN
 
 ```
+
+or with terraform code, use the script [terraform/demo/vault_login.sh]()

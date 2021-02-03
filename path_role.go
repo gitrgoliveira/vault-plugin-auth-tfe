@@ -25,7 +25,6 @@ func (b *tfeAuthBackend) pathsRole() []*framework.Path {
 			HelpDescription: strings.TrimSpace(roleHelp["role-list"][1]),
 			DisplayAttrs: &framework.DisplayAttributes{
 				Navigation: true,
-				// ItemType:   "Role",
 			},
 		},
 		{
@@ -80,7 +79,6 @@ func (b *tfeAuthBackend) pathsRole() []*framework.Path {
 			HelpSynopsis:    strings.TrimSpace(roleHelp["role"][0]),
 			HelpDescription: strings.TrimSpace(roleHelp["role"][1]),
 			DisplayAttrs: &framework.DisplayAttributes{
-				// ItemType: "Role",
 				Action: "Create",
 			},
 		},
