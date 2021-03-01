@@ -210,8 +210,15 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeConfig) error {
 		return fmt.Errorf(msg)
 	}
 
+	// The Run must be related to the specified workspace
 	if run.Data.Relationships.Workspace.Data.ID != workspace.Data.ID {
 		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.Data.Relationships.Workspace.Data.ID, workspace.Data.ID)
+		return fmt.Errorf(msg)
+	}
+
+	// The account must be a service account.
+	if account.Data.Attributes.IsServiceAccount == false {
+		msg := fmt.Sprintf("ATLAS Token must belong to a service account")
 		return fmt.Errorf(msg)
 	}
 

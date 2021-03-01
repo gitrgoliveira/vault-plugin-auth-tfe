@@ -28,6 +28,7 @@ This means you will not need to configure any kind of static secret material for
 This plugin will issue a token then the following criteria are met:
 
  - The *ATLAS_TOKEN* provided has the above mentioned permissions
+ - The *ATLAS_TOKEN* is a *Service account* token
  - The Run ID provided is in the state "planning" or "applying"
  - The Run ID belongs to the Workspace that is being sent.
  - The Workspace name is in the list of the allowed workspaces for that Role.
