@@ -36,23 +36,24 @@ This plugin will issue a token then the following criteria are met:
 
 ## Usage / Demo
 
-All commands can be run using the provided [Makefile](./Makefile). However, it may be instructive to look at the commands to gain a greater understanding of how Vault registers plugins. Using the Makefile will result in running the Vault server in `dev` mode. Do not run Vault in `dev` mode in production. The `dev` server allows you to configure the plugin directory as a flag, and automatically registers plugin binaries in that directory. In production, plugin binaries must be manually registered.
+All commands can be run using the provided [Makefile](./Makefile). However, it may be educational to look at the commands to gain a greater understanding of how Vault registers plugins. Using the Makefile will result in running the Vault server in `dev` mode. Do not run Vault in `dev` mode in production. The `dev` server allows you to configure the plugin directory as a flag, and automatically registers plugin binaries in that directory. In production, plugin binaries must be manually registered.
+
+> For the AWS demo, please ensure your AWS credentials have been added to the environment.
 
 This will build the plugin binary and start the Vault dev server:
-
-```
+```bash
 # Build TFE Auth plugin and start Vault dev server with plugin automatically registered
 $ make
 ```
 
 Now open a new terminal window and run the following commands:
 
-```
+```bash
 # Open a new terminal window and export Vault dev server http address
 $ export VAULT_ADDR='http://127.0.0.1:8200'
 
 # Enable the TFE plugin
-$ make enable
+$ vault auth enable -path=tfe-auth vault-plugin-auth-tfe
 
 # Configure the Authentication backend. By default it points to app.terraform.io
 $ vault write auth/tfe-auth/config organization=tfc_org
@@ -60,12 +61,13 @@ $ vault write auth/tfe-auth/config organization=tfc_org
 # Add login roles
 $ vault write auth/tfe-auth/role/workspace_role workspaces=* policies=default
 
-
 ```
 
-To login using the tfe auth method:
+An example of the above can be seen in [terraform/demo/01.setup_vault.sh](terraform/demo/01.setup_vault.sh)
 
-```
+To login using the tfe auth method, this is the command, but it will not work unless it's run within TFC/E.
+
+```bash
 $ vault write auth/tfe-auth/login role=workspace_role \
 		workspace=$TFC_WORKSPACE_NAME \
 		run-id=$TFC_RUN_ID \
@@ -73,14 +75,15 @@ $ vault write auth/tfe-auth/login role=workspace_role \
 
 ```
 
-or with terraform code, use the script [terraform/demo/vault_login.sh]() and:
+With terraform code, use the script [terraform/demo/vault_login.sh](terraform/demo/vault_login.sh) and the terraform code:
 
-```
+```javascript
 data "external" "vault_login" {
   program = ["bash", "${path.module}/vault_login.sh"]
   query = {
     role = "workspace_role"
     VAULT_ADDR = "http://vault.my-server.com:8200"
+    VAULT_LOGIN_PATH = "v1/auth/tfe-auth/login"
   }
 }
 
@@ -90,3 +93,8 @@ provider "vault" {
   token_name = "terraform-${var.TFE_RUN_ID}"
 }
 ```
+
+### AWS demo
+
+For the AWS demo, vault needs to be setup with [terraform/demo/02.setup_vault_aws.sh](terraform/demo/02.setup_vault_aws.sh) and the code in here is fairly simple [terraform/demo/aws.tf](terraform/demo/aws.tf)
+
