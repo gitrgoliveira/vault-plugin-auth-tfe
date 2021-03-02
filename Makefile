@@ -18,6 +18,7 @@ build:
 	GOOS=$(OS) GOARCH="$(GOARCH)" go build -o vault/plugins/vault-plugin-auth-tfe cmd/vault-plugin-auth-tfe/main.go
 
 start:
+	# run this first -->>> eval $(doormat aws --account se_demos_dev)
 	vault server -dev -dev-root-token-id=root \
 	-dev-plugin-dir=./vault/plugins -log-level=debug \
 	-dev-listen-address=192.168.178.40:8200

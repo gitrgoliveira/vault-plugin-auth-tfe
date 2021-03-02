@@ -1,19 +1,23 @@
+#! /bin/bash
+source helper.sh
 
-export VAULT_ADDR='http://88.97.2.109:8200'
 vault policy write terraform-policy - << EOF
 path "auth/token/create" {
     capabilities = ["update"]
 }
+
 path "secret/data/*" {
   capabilities = ["read","create", "update"]
 }
-
 path "secret/*" {
     capabilities = ["read", "create", "update"]
 }
-EOF
-vault kv put secret/hello foo=world
 
+path "aws/sts/deploy" {
+  capabilities = ["read"]
+}
+
+EOF
 
 vault auth enable -path=tfe-auth vault-plugin-auth-tfe
 # vault write auth/tfe-auth/config organization=hc-emea-sentinel-demo

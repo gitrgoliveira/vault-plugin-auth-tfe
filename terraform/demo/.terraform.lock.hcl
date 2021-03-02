@@ -1,20 +1,39 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/hashicorp/external" {
-  version = "2.0.0"
+provider "registry.terraform.io/hashicorp/aws" {
+  version = "3.30.0"
   hashes = [
-    "h1:6S7hqjmUnoAZ5D/0F1VlJZKSJsUIBh7Ro0tLjGpKO0g=",
-    "zh:07949780dd6a1d43e7b46950f6e6976581d9724102cb5388d3411a1b6f476bde",
-    "zh:0a4f4636ff93f0644affa8474465dd8c9252946437ad025b28fc9f6603534a24",
-    "zh:0dd7e05a974c649950d1a21d7015d3753324ae52ebdd1744b144bc409ca4b3e8",
-    "zh:2b881032b9aa9d227ac712f614056d050bcdcc67df0dc79e2b2cb76a197059ad",
-    "zh:38feb4787b4570335459ca75a55389df1a7570bdca8cdf5df4c2876afe3c14b4",
-    "zh:40f7e0aaef3b1f4c2ca2bb1189e3fe9af8c296da129423986d1d99ccc8cfb86c",
-    "zh:56b361f64f0f0df5c4f958ae2f0e6f8ba192f35b720b9d3ae1be068fabcf73d9",
-    "zh:5fadb5880cd31c2105f635ded92b9b16f918c1dd989627a4ce62c04939223909",
-    "zh:61fa0be9c14c8c4109cfb7be8d54a80c56d35dbae49d3231cddb59831e7e5a4d",
-    "zh:853774bf97fbc4a784d5af5a4ca0090848430781ae6cfc586adeb48f7c44af79",
+    "h1:PmKa3uxO2mDA5FJfGmpX+4e0x70vFLV5Ka9NxkuMpUo=",
+    "zh:01f562a6a31fe46a8ca74804f360e3452b26f71abc549ce1f0ab5a8af2484cdf",
+    "zh:25bacc5ed725051f0ab1f7d575e45c901e5b8e1d50da4156a31dda92b2b7e481",
+    "zh:349b79979d9169db614d8ebd1bc2e0caeb7a38dc816e261b8b2b4b5204615519",
+    "zh:5e41446acc54c6fc15e82c3fa14b72174b30eba81e0711ede297e5620c55a628",
+    "zh:68ad98f6d612bdc35a65d48950abc8e75c69decb49db28258ce8eeb5458586b7",
+    "zh:704603d65e8bac17d203b57c2db142c3134a91076e1b4a31c40f75eb3257dde8",
+    "zh:a362c700032b2db047d16007d52f28b3f216d32671b6b355d23bdaa082c66a4b",
+    "zh:bd197797b41268de3c93cad02b7c655dc0c4d8661abb37544ca049e6b1eccae6",
+    "zh:deb12ef0e3396a71d485977ddc14b695775f7937097ebf2b2f53ed348a4365e7",
+    "zh:ec8a7d0f02738f290107d39bf401d68ddce82a95cd9d998003f7e04b3a196411",
+    "zh:ffcc43b6c5e7f26c55e2a8c539d7370fca8042722400a3e06bdce4240bd7088a",
+  ]
+}
+
+provider "registry.terraform.io/hashicorp/external" {
+  version = "2.1.0"
+  hashes = [
+    "h1:LTl5CGW8wiIEe16AC4MtXN/95xWWNDbap70zJsBTk0w=",
+    "zh:0d83ffb72fbd08986378204a7373d8c43b127049096eaf2765bfdd6b00ad9853",
+    "zh:7577d6edc67b1e8c2cf62fe6501192df1231d74125d90e51d570d586d95269c5",
+    "zh:9c669ded5d5affa4b2544952c4b6588dfed55260147d24ced02dca3a2829f328",
+    "zh:a404d46f2831f90633947ab5d57e19dbfe35b3704104ba6ec80bcf50b058acfd",
+    "zh:ae1caea1c936d459ceadf287bb5c5bd67b5e2a7819df6f5c4114b7305df7f822",
+    "zh:afb4f805477694a4b9dde86b268d2c0821711c8aab1c6088f5f992228c4c06fb",
+    "zh:b993b4a1de8a462643e78f4786789e44ce5064b332fee1cb0d6250ed085561b8",
+    "zh:c84b2c13fa3ea2c0aa7291243006d560ce480a5591294b9001ce3742fc9c5791",
+    "zh:c8966f69b7eccccb771704fd5335923692eccc9e0e90cb95d14538fe2e92a3b8",
+    "zh:d5fe68850d449b811e633a300b114d0617df6d450305e8251643b4d143dc855b",
+    "zh:ddebfd1e674ba336df09b1f27bbaa0e036c25b7a7087dc8081443f6e5954028b",
   ]
 }
 
