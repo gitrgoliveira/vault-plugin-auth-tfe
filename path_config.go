@@ -13,15 +13,8 @@ func (b *tfeAuthBackend) pathConfig() *framework.Path {
 		Fields: map[string]*framework.FieldSchema{
 			"terraform_host": {
 				Type:        framework.TypeString,
-				Description: "TFE host (e.g. app.terraform.io)",
-				Default:     "app.terraform.io",
-			},
-			"terraform_host_cert": {
-				Type:        framework.TypeString,
-				Description: "PEM encoded certificate used to validate the TFE host endpoint",
-				DisplayAttrs: &framework.DisplayAttributes{
-					Name: "TFE CA Certificate",
-				},
+				Description: "TFE host (e.g. https://app.terraform.io)",
+				Default:     "https://app.terraform.io",
 			},
 			"organization": {
 				Type:        framework.TypeString,
@@ -50,11 +43,9 @@ func (b *tfeAuthBackend) pathConfigWrite(ctx context.Context, req *logical.Reque
 	if host == "" {
 		return logical.ErrorResponse("no host provided"), nil
 	}
-	caCert := data.Get("terraform_host_cert").(string)
 
-	config := &tfeConfig{
+	config := &tfeAuthConfig{
 		Host:         host,
-		CACert:       caCert,
 		Organization: org,
 	}
 
@@ -69,11 +60,9 @@ func (b *tfeAuthBackend) pathConfigWrite(ctx context.Context, req *logical.Reque
 	return nil, nil
 }
 
-type tfeConfig struct {
+type tfeAuthConfig struct {
 	// Host is the url string for the TFE API
 	Host string `json:"host"`
-	// CACert is the CA Cert to use to call into the TFE API
-	CACert string `json:"ca_cert"`
 	// The organization autthorised to use this backend
 	Organization string `json:"organization"`
 }
@@ -86,9 +75,8 @@ func (b *tfeAuthBackend) pathConfigRead(ctx context.Context, req *logical.Reques
 	} else {
 		resp := &logical.Response{
 			Data: map[string]interface{}{
-				"terraform_host":      config.Host,
-				"terraform_host_cert": config.CACert,
-				"organization":        config.Organization,
+				"terraform_host": config.Host,
+				"organization":   config.Organization,
 			},
 		}
 		return resp, nil

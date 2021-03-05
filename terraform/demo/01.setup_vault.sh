@@ -7,10 +7,10 @@ path "auth/token/create" {
 }
 
 path "secret/data/*" {
-  capabilities = ["read","create", "update"]
+  capabilities = ["read","create", "delete", "update"]
 }
 path "secret/*" {
-    capabilities = ["read", "create", "update"]
+    capabilities = ["read", "create", "delete", "update"]
 }
 
 path "aws/sts/deploy" {
@@ -22,7 +22,7 @@ EOF
 vault auth enable -path=tfe-auth vault-plugin-auth-tfe
 # vault write auth/tfe-auth/config organization=hc-emea-sentinel-demo
 vault write auth/tfe-auth/config organization=org2 \
-    terraform_host=tfe.ric.gcp.hashidemos.io
+    terraform_host=https://tfe.ric.gcp.hashidemos.io
 
 vault read auth/tfe-auth/config
 vault write auth/tfe-auth/role/workspace_role workspaces=* \

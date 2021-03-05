@@ -108,7 +108,7 @@ func (b *tfeAuthBackend) role(ctx context.Context, s logical.Storage, name strin
 	return role, nil
 }
 
-func (b *tfeAuthBackend) config(ctx context.Context, s logical.Storage) (*tfeConfig, error) {
+func (b *tfeAuthBackend) config(ctx context.Context, s logical.Storage) (*tfeAuthConfig, error) {
 	raw, err := s.Get(ctx, configPath)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (b *tfeAuthBackend) config(ctx context.Context, s logical.Storage) (*tfeCon
 		return nil, nil
 	}
 
-	conf := &tfeConfig{}
+	conf := &tfeAuthConfig{}
 	if err := json.Unmarshal(raw.Value, conf); err != nil {
 		return nil, err
 	}

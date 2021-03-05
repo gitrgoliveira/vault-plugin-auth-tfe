@@ -14,7 +14,7 @@ endif
 
 all: fmt build start
 
-build:
+build: fmt
 	GOOS=$(OS) GOARCH="$(GOARCH)" go build -o vault/plugins/vault-plugin-auth-tfe cmd/vault-plugin-auth-tfe/main.go
 
 start:

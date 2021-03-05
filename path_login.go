@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	log "github.com/hashicorp/go-hclog"
+	tfe "github.com/hashicorp/go-tfe"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/cidrutil"
 	"github.com/hashicorp/vault/sdk/helper/strutil"
@@ -157,7 +158,7 @@ func (b *tfeAuthBackend) aliasLookahead(ctx context.Context, req *logical.Reques
 	}, nil
 }
 
-func (b *tfeAuthBackend) parseAndValidateLogin(role *roleStorageEntry, config *tfeConfig,
+func (b *tfeAuthBackend) parseAndValidateLogin(role *roleStorageEntry, config *tfeAuthConfig,
 	workspace string, runID string, atlasToken string) (*tfeLogin, error) {
 
 	if len(role.Workspaces) > 1 || role.Workspaces[0] != "*" {
@@ -180,51 +181,64 @@ type tfeLogin struct {
 	AtlasToken string `mapstructure:"atlas-token"`
 }
 
-func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeConfig) error {
+func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 
-	run, err := fetchRunInfo(t, config)
+	clientConfig := &tfe.Config{
+		Address: config.Host,
+		Token:   t.AtlasToken,
+	}
+
+	ctx := context.Background()
+
+	client, err := tfe.NewClient(clientConfig)
 	if err != nil {
-		msg := fmt.Sprintf("Error fetching Run Info: %s", string(err.Error()))
+		msg := fmt.Sprintf("Error creating client for host %s with token %s -> %s", config.Host, t.AtlasToken, string(err.Error()))
 		return fmt.Errorf(msg)
 	}
 
-	workspace, err := fetchWorkspaceInfo(t, config)
+	run, err := client.Runs.Read(ctx, t.RunID)
 	if err != nil {
-		msg := fmt.Sprintf("Error fetching Workspace Info: %s", string(err.Error()))
+		msg := fmt.Sprintf("Error fetching RunID %s Info: %s", t.RunID, string(err.Error()))
 		return fmt.Errorf(msg)
 	}
 
-	account, err := fetchAccountInfo(t, config)
+	workspace, err := client.Workspaces.Read(ctx, config.Organization, t.Workspace)
 	if err != nil {
-		msg := fmt.Sprintf("Error fetching Account Info: %s", string(err.Error()))
+		msg := fmt.Sprintf("Error fetching Workspace %s Info -> %s", t.Workspace, string(err.Error()))
 		return fmt.Errorf(msg)
 	}
 
-	msg := fmt.Sprintf("Run status is %s", run.Data.Attributes.Status)
+	account, err := client.Users.ReadCurrent(ctx)
+	if err != nil {
+		msg := fmt.Sprintf("Error fetching Account Info for token %s -> %s", t.AtlasToken, string(err.Error()))
+		return fmt.Errorf(msg)
+	}
+
+	msg := fmt.Sprintf("Run status is %s", run.Status)
 	log.L().Info(msg, "info", nil)
 
 	// Run must be active
-	if run.Data.Attributes.Status != "applying" &&
-		run.Data.Attributes.Status != "planning" {
-		msg := fmt.Sprintf("Run ID status is %s. Expected planning or applying", run.Data.Attributes.Status)
+	if run.Status != "applying" &&
+		run.Status != "planning" {
+		msg := fmt.Sprintf("Run ID %s status is %s. Expected planning or applying", run.ID, run.Status)
 		return fmt.Errorf(msg)
 	}
 
 	// The Run must be related to the specified workspace
-	if run.Data.Relationships.Workspace.Data.ID != workspace.Data.ID {
-		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.Data.Relationships.Workspace.Data.ID, workspace.Data.ID)
+	if run.Workspace.ID != workspace.ID {
+		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.ID, workspace.ID)
 		return fmt.Errorf(msg)
 	}
 
 	// The account must be a service account.
-	if account.Data.Attributes.IsServiceAccount == false {
+	if account.IsServiceAccount == false {
 		msg := fmt.Sprintf("ATLAS Token must belong to a service account")
 		return fmt.Errorf(msg)
 	}
 
-	log.L().Info(string(run.Data.ID), "info", nil)
-	log.L().Info(string(workspace.Data.ID), "info", nil)
-	log.L().Info(string(account.Data.ID), "info", nil)
+	log.L().Info(string(run.ID), "info", nil)
+	log.L().Info(string(workspace.ID), "info", nil)
+	log.L().Info(string(account.ID), "info", nil)
 
 	return nil
 }
