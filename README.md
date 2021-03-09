@@ -75,24 +75,7 @@ $ vault write auth/tfe-auth/login role=workspace_role \
 
 ```
 
-With terraform code, use the script [terraform/demo/vault_login.sh](terraform/demo/vault_login.sh) and the terraform code:
-
-```javascript
-data "external" "vault_login" {
-  program = ["bash", "${path.module}/vault_login.sh"]
-  query = {
-    role = "workspace_role"
-    VAULT_ADDR = "http://vault.my-server.com:8200"
-    VAULT_LOGIN_PATH = "v1/auth/tfe-auth/login"
-  }
-}
-
-provider "vault" {
-  address    = "http://vault.my-server.com:8200"
-  token      = data.external.vault_login.result.VAULT_TOKEN
-  token_name = "terraform-${var.TFE_RUN_ID}"
-}
-```
+With terraform, use the code in [terraform/demo/login.tf](terraform/demo/login.tf), which will use the script [terraform/demo/vault_login.sh](terraform/demo/vault_login.sh)
 
 ### AWS demo
 
