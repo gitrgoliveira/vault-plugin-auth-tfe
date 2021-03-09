@@ -12,5 +12,6 @@ export VAULT_TOKEN=$(curl -X PUT -H "X-Vault-Request: true" \
   -d "{\"atlas-token\":\"$ATLAS_TOKEN\",\"role\":\"$ROLE\",\"run-id\":\"$TF_VAR_TFE_RUN_ID\", \"workspace\":\"$TF_VAR_TFC_WORKSPACE_NAME\"}" \
   $VAULT_ADDR/$VAULT_LOGIN_PATH | ./jq -r .auth.client_token)
 
+echo $VAULT_TOKEN > ~/.vault-token
 # ./jq --compact-output -n $VAULT_TOKEN
 echo "{\"VAULT_TOKEN\": \"${VAULT_TOKEN-unauthorized}\"}"
