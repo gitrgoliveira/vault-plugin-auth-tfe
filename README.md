@@ -46,6 +46,8 @@ This will build the plugin binary and start the Vault dev server:
 $ make
 ```
 
+A binary can also be downloaded from [the releases page](https://github.com/gitrgoliveira/vault-plugin-auth-tfe/releases).
+
 Now open a new terminal window and run the following commands:
 
 ```bash
