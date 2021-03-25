@@ -2,11 +2,13 @@ package tfeauth
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 
 	log "github.com/hashicorp/go-hclog"
 	tfe "github.com/hashicorp/go-tfe"
+	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/vault/sdk/framework"
 	"github.com/hashicorp/vault/sdk/helper/cidrutil"
 	"github.com/hashicorp/vault/sdk/helper/strutil"
@@ -29,9 +31,13 @@ func pathLogin(b *tfeAuthBackend) *framework.Path {
 				Type:        framework.TypeString,
 				Description: "TFC_RUN_ID or ATLAS_RUN_ID of the current active run",
 			},
-			"atlas-token": {
+			"tfe-token": {
 				Type:        framework.TypeString,
-				Description: "The ATLAS_TOKEN environment variable",
+				Description: "The ATLAS_TOKEN environment variable or a TFE access token from the worker service account",
+			},
+			"tfe-credentials-file": {
+				Type:        framework.TypeString,
+				Description: "TFE/TFC credentials file in TERRAFORM_CONFIG, provided base64 encoded. This is usually in /tmp/cli.tfrc, unless you are using a TFC agent.",
 			},
 		},
 
@@ -61,9 +67,13 @@ func (b *tfeAuthBackend) pathLogin(ctx context.Context, req *logical.Request, da
 		return logical.ErrorResponse("missing run-id"), nil
 	}
 
-	atlasTokenStr := data.Get("atlas-token").(string)
-	if len(atlasTokenStr) == 0 {
-		return logical.ErrorResponse("missing atlas-token"), nil
+	tfeTokenStr := data.Get("tfe-token").(string)
+	credentialsFileStr := data.Get("tfe-credentials-file").(string)
+	if len(tfeTokenStr) == 0 && len(credentialsFileStr) == 0 {
+		return logical.ErrorResponse("missing TFE token or credentials file"), nil
+	}
+	if len(tfeTokenStr) > 0 && len(credentialsFileStr) > 0 {
+		return logical.ErrorResponse("Only TFE token or credentials file may be provided. Not both."), nil
 	}
 
 	b.l.RLock()
@@ -97,7 +107,7 @@ func (b *tfeAuthBackend) pathLogin(ctx context.Context, req *logical.Request, da
 	}
 
 	tfeLogin, err := b.parseAndValidateLogin(role, config,
-		workspaceStr, runIDStr, atlasTokenStr)
+		workspaceStr, runIDStr, tfeTokenStr, credentialsFileStr)
 	if err != nil {
 		return nil, err
 	}
@@ -158,11 +168,21 @@ func (b *tfeAuthBackend) aliasLookahead(ctx context.Context, req *logical.Reques
 	}, nil
 }
 
+type TerraformConfig struct {
+	Credentials []CredentialsConfig `hcl:"credentials,block"`
+}
+
+type CredentialsConfig struct {
+	Host  string `hcl:"host,label"`
+	Token string `hcl:"token"`
+}
+
 func (b *tfeAuthBackend) parseAndValidateLogin(role *roleStorageEntry, config *tfeAuthConfig,
-	workspace string, runID string, atlasToken string) (*tfeLogin, error) {
+	workspace string, runID string, tfeToken string, credentialsFileStr string) (*tfeLogin, error) {
 
 	if len(role.Workspaces) > 1 || role.Workspaces[0] != "*" {
 		if !strutil.StrListContainsGlob(role.Workspaces, workspace) {
+			b.Logger().Error(`workspace %s not authorized`, workspace)
 			return nil, errors.New("workspace not authorized")
 		}
 	}
@@ -170,29 +190,46 @@ func (b *tfeAuthBackend) parseAndValidateLogin(role *roleStorageEntry, config *t
 	login := &tfeLogin{}
 	login.Workspace = workspace
 	login.RunID = runID
-	login.AtlasToken = atlasToken
+
+	if len(credentialsFileStr) > 0 {
+		// _, err := base64.StdEncoding.DecodeString(credentialsFileStr)
+		credentialsFileDecoded, err := base64.StdEncoding.DecodeString(credentialsFileStr)
+		if err != nil {
+			b.Logger().Error(`unable to decode credentials file`)
+			return nil, logical.ErrPermissionDenied
+		}
+		var tfConfig TerraformConfig
+		err = hcl.Decode(&tfConfig, string(credentialsFileDecoded))
+		if err != nil {
+			b.Logger().Error(`unable to parse credentials file`)
+			return nil, logical.ErrPermissionDenied
+		}
+		login.TFEToken = tfConfig.Credentials[0].Token
+	} else {
+		login.TFEToken = tfeToken
+	}
 
 	return login, nil
 }
 
 type tfeLogin struct {
-	Workspace  string `mapstructure:"workspace"`
-	RunID      string `mapstructure:"run-id"`
-	AtlasToken string `mapstructure:"atlas-token"`
+	Workspace string `mapstructure:"workspace"`
+	RunID     string `mapstructure:"run-id"`
+	TFEToken  string `mapstructure:"tfe-token"`
 }
 
 func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 
 	clientConfig := &tfe.Config{
 		Address: config.Host,
-		Token:   t.AtlasToken,
+		Token:   t.TFEToken,
 	}
 
 	ctx := context.Background()
 
 	client, err := tfe.NewClient(clientConfig)
 	if err != nil {
-		msg := fmt.Sprintf("Error creating client for host %s with token %s -> %s", config.Host, t.AtlasToken, string(err.Error()))
+		msg := fmt.Sprintf("Error creating client for host %s with token %s -> %s", config.Host, t.TFEToken, string(err.Error()))
 		return fmt.Errorf(msg)
 	}
 
@@ -210,7 +247,7 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 
 	account, err := client.Users.ReadCurrent(ctx)
 	if err != nil {
-		msg := fmt.Sprintf("Error fetching Account Info for token %s -> %s", t.AtlasToken, string(err.Error()))
+		msg := fmt.Sprintf("Error fetching Account Info for token %s -> %s", t.TFEToken, string(err.Error()))
 		return fmt.Errorf(msg)
 	}
 
@@ -232,7 +269,7 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 
 	// The account must be a service account.
 	if account.IsServiceAccount == false {
-		msg := fmt.Sprintf("ATLAS Token must belong to a service account")
+		msg := fmt.Sprintf("TFE Token must belong to a service account")
 		return fmt.Errorf(msg)
 	}
 

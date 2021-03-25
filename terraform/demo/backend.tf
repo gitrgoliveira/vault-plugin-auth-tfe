@@ -15,4 +15,11 @@ terraform {
       name = "vault-login-demo"
     }
   }
+
+  required_providers {
+    vault = {
+      source = "hashicorp/vault"
+    }
+
+  }
 }
