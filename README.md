@@ -6,29 +6,39 @@ This means you will not need to configure any kind of static secret material for
 
 *TFE Auth* is a test authentication plugin for [HashiCorp Vault](https://www.vaultproject.io/). It is meant for demonstration purposes only and should not assume some kind of official support from HashiCorp.
 
-## TFC/E assumptions
+## TFE/TFC assumptions
 
- - TFC/E generates a RUN ID that is unique for that TFE Workspace.
+ - TFE/TFC generates a RUN ID that is unique for that TFE Workspace.
 
- - Plans or applies are always executed within TFC/E (i.e. remote operations)
+ - Plans or applies are always executed within TFE/TFC (i.e. remote operations)
+   - These can also be using terraform remote agents.
 
- - TFC/E generates a different Atlas token during plan and the apply stages
+ - TFE/TFC generates a different token during plan and the apply stages
 
  - The following environment variables are available:
-   - ATLAS_TOKEN
    - TF_VAR_TFE_RUN_ID
    - TF_VAR_TFC_WORKSPACE_NAME
 
- - The *ATLAS_TOKEN* must have permissions to:
+ - The TFE/TFC token must have permissions to:
    - [Get the current run ID details](https://www.terraform.io/docs/cloud/api/run.html#get-run-details)
    - [Get the current workspace details](https://www.terraform.io/docs/cloud/api/workspaces.html#show-workspace)
    - [Get the token account details](https://www.terraform.io/docs/cloud/api/account.html#get-your-account-details)
 
+### Retrieving the TFE/TFC token
+The TFE/TFC token lives in more than one place. I recommend using the credentials file location.
+
+The credentials file within the TFE/TFC worker lives one of these 2 places:
+ - `/tmp/cli.tfrc` for code run within TFC/TFE
+ - `/root/.tfc-agent/component/terraform/runs/${var.TFE_RUN_ID}.[plan|apply]/cli.tfrc` for code running in TFC Agents
+
+
+The TFE/TFC token also exists as an environment variable *ATLAS_TOKEN*. See [terraform/demo/login_env.tf.example](terraform/demo/login_env.tf.example) for an example of that.
+
 ## Vault Authentication conditions
 This plugin will issue a token then the following criteria are met:
 
- - The *ATLAS_TOKEN* provided has the above mentioned permissions
- - The *ATLAS_TOKEN* is a *Service account* token
+ - The TFE/TFC Token provided has the above mentioned permissions
+ - The TFE/TFC Token is a *Service account* token
  - The Run ID provided is in the state "planning" or "applying"
  - The Run ID belongs to the Workspace that is being sent.
  - The Workspace name is in the list of the allowed workspaces for that Role.
@@ -77,7 +87,22 @@ $ vault write auth/tfe-auth/login role=workspace_role \
 
 ```
 
-With terraform, use the code in [terraform/demo/login.tf](terraform/demo/login.tf), which will use the script [terraform/demo/vault_login.sh](terraform/demo/vault_login.sh)
+With terraform, use the code in [terraform/demo/login_file.tf](terraform/demo/login_file.tf)
+```
+provider "vault" {
+  address    = "http://vault_address:8200"
+  token_name = "terraform-${var.TFE_RUN_ID}"
+  auth_login {
+    path = "auth/tfe-auth/login"
+    parameters = {
+      role      = "workspace_role"
+      workspace = var.TFC_WORKSPACE_NAME
+      run-id    = var.TFE_RUN_ID
+      tfe-credentials-file = filebase64("/tmp/cli.tfrc")
+    }
+  }
+}
+```
 
 ### AWS demo
 
