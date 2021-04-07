@@ -6,6 +6,9 @@ This means you will not need to configure any kind of static secret material for
 
 *TFE Auth* is a test authentication plugin for [HashiCorp Vault](https://www.vaultproject.io/). It is meant for demonstration purposes only and should not assume some kind of official support from HashiCorp.
 
+## Workflow overview
+![Workflow overview](images/vault_plugin_workflow.png?raw=true "Workflow overview")
+
 ## TFE/TFC assumptions
 
  - TFE/TFC generates a RUN ID that is unique for that TFE Workspace.

@@ -2,7 +2,7 @@
 locals {
   file_path_apply = "/root/.tfc-agent/component/terraform/runs/${var.TFE_RUN_ID}.apply/cli.tfrc"
   file_path_plan  = "/root/.tfc-agent/component/terraform/runs/${var.TFE_RUN_ID}.plan/cli.tfrc"
-  file_path       = fileexists(local.file_path_apply) ? local.file_path_apply : local.file_path_plan
+  # file_path       = fileexists(local.file_path_apply) ? local.file_path_apply : local.file_path_plan
 }
 
 provider "vault" {
@@ -15,13 +15,13 @@ provider "vault" {
       workspace = var.TFC_WORKSPACE_NAME
       run-id    = var.TFE_RUN_ID
       # For code that is running within TFC/TFE
-      # tfe-credentials-file = filebase64("/tmp/cli.tfrc")
+      tfe-credentials-file = filebase64("/tmp/cli.tfrc")
 
       # For code that is using a TFC/Runner
       # tfe-credentials-file = filebase64(local.file_path)
 
       # For code to run in both
-      tfe-credentials-file = fileexists("/tmp/cli.tfrc") ? filebase64("/tmp/cli.tfrc") : filebase64(local.file_path)
+      # tfe-credentials-file = fileexists("/tmp/cli.tfrc") ? filebase64("/tmp/cli.tfrc") : filebase64(local.file_path)
     }
   }
 }
