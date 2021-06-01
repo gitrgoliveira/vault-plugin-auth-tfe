@@ -4,7 +4,7 @@ The aim of this Vault authentication plugin is to provide Terraform Cloud or Ent
 
 This means you will not need to configure any kind of static secret material for your terraform execution to be able to use Vault.
 
-*TFE Auth* is a test authentication plugin for [HashiCorp Vault](https://www.vaultproject.io/). It is meant for demonstration purposes only and should not assume some kind of official support from HashiCorp.
+*TFE Auth* is an authentication plugin for [HashiCorp Vault](https://www.vaultproject.io/), but do not assume some kind of official support from HashiCorp. You should make your own decision whether it is safe or not to use this plugin in your environment.
 
 ## Workflow overview
 ![Workflow overview](images/vault_plugin_workflow.png?raw=true "Workflow overview")
