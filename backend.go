@@ -27,10 +27,7 @@ var _ logical.Factory = Factory
 
 // Factory configures and returns Mock backends
 func Factory(ctx context.Context, conf *logical.BackendConfig) (logical.Backend, error) {
-	b, err := newBackend()
-	if err != nil {
-		return nil, err
-	}
+	b := Backend()
 
 	if conf == nil {
 		return nil, fmt.Errorf("configuration passed into backend is nil")
@@ -43,7 +40,7 @@ func Factory(ctx context.Context, conf *logical.BackendConfig) (logical.Backend,
 	return b, nil
 }
 
-func newBackend() (*tfeAuthBackend, error) {
+func Backend() *tfeAuthBackend {
 	b := &tfeAuthBackend{}
 
 	b.Backend = &framework.Backend{
@@ -67,7 +64,7 @@ func newBackend() (*tfeAuthBackend, error) {
 		),
 	}
 
-	return b, nil
+	return b
 }
 
 // role takes a storage backend and the name and returns the role's storage
