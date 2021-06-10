@@ -66,7 +66,7 @@ If instead you are installing this plugin in your Vault environment, then please
 chmod +x /etc/vault.d/plugins/vault-plugin-auth-tfe
 # if your vault is using mlock (which it does by default)
 setcap cap_ipc_lock=+ep /etc/vault.d/plugins/vault-plugin-auth-tfe
-vault plugin register -sha256=$(cat /tmp/vault-plugin-auth-tfe.sha256 | head -n1 | awk '{print $1;}') auth vault-plugin-auth-tfe
+vault plugin register -sha256=84ff2af144de37792d546207e42b618cef027a692bf0d32c324555ba28ca301e auth vault-plugin-auth-tfe
 ```
 You can get the the sha256 sum from [the releases page](https://github.com/gitrgoliveira/vault-plugin-auth-tfe/releases) or from:
 ```bash
