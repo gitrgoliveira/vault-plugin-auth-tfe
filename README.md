@@ -114,7 +114,7 @@ provider "vault" {
       workspace = var.TFC_WORKSPACE_NAME
       run-id    = var.TFE_RUN_ID
       # For code that is running within TFC/TFE or using an external agent
-      tfe-credentials-file = try(filebase64("${path.cwd}/../.terraformrc"),
+      tfe-credentials-file = try(filebase64("${path.cwd}/../../../.terraformrc"),
                                   filebase64("/tmp/cli.tfrc"))
     }
   }
