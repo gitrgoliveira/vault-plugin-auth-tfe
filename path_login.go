@@ -112,29 +112,37 @@ func (b *tfeAuthBackend) pathLogin(ctx context.Context, req *logical.Request, da
 		return nil, err
 	}
 
-	err = tfeLogin.lookup(role, config)
+	run_status, err := tfeLogin.lookup(role, config)
 	if err != nil {
 		b.Logger().Error(`login unauthorized due to: ` + err.Error())
 		return nil, logical.ErrPermissionDenied
 	}
+	metadata := map[string]string{
+		"Workspace":    tfeLogin.Workspace,
+		"Organization": config.Organization,
+		"role":         roleName,
+		"RunStatus":    run_status,
+	}
+	name := fmt.Sprintf("%s/%s/%s", config.Organization, tfeLogin.Workspace, run_status)
 
-	auth := &logical.Auth{
-		Alias: &logical.Alias{
-			Name: fmt.Sprintf("%s/%s", config.Organization, tfeLogin.Workspace),
-			Metadata: map[string]string{
-				"Workspace":    tfeLogin.Workspace,
-				"Organization": config.Organization,
-			},
-		},
-		InternalData: map[string]interface{}{
-			"role": roleName,
-		},
-		Metadata: map[string]string{
+	if config.UseRunStatus == false { // keeping previous behaviour
+		metadata = map[string]string{
 			"Workspace":    tfeLogin.Workspace,
 			"Organization": config.Organization,
 			"role":         roleName,
+			"RunStatus":    "",
+		}
+		name = fmt.Sprintf("%s/%s", config.Organization, tfeLogin.Workspace)
+	}
+
+	auth := &logical.Auth{
+		Alias: &logical.Alias{
+			Name:     name,
+			Metadata: metadata,
 		},
-		DisplayName: fmt.Sprintf("%s/%s", config.Organization, tfeLogin.Workspace),
+		InternalData: map[string]interface{}{},
+		Metadata:     metadata,
+		DisplayName:  name,
 	}
 
 	role.PopulateTokenAuth(auth)
@@ -218,7 +226,7 @@ type tfeLogin struct {
 	TFEToken  string `mapstructure:"tfe-token"`
 }
 
-func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
+func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) (string, error) {
 
 	clientConfig := &tfe.Config{
 		Address: config.Host,
@@ -230,25 +238,25 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 	client, err := tfe.NewClient(clientConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Error creating client for host %s with token %s -> %s", config.Host, t.TFEToken, string(err.Error()))
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	run, err := client.Runs.Read(ctx, t.RunID)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching RunID %s Info: %s", t.RunID, string(err.Error()))
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	workspace, err := client.Workspaces.Read(ctx, config.Organization, t.Workspace)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching Workspace %s Info -> %s", t.Workspace, string(err.Error()))
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	account, err := client.Users.ReadCurrent(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching Account Info for token %s -> %s", t.TFEToken, string(err.Error()))
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	msg := fmt.Sprintf("Run status is %s", run.Status)
@@ -258,26 +266,26 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) error {
 	if run.Status != "applying" &&
 		run.Status != "planning" {
 		msg := fmt.Sprintf("Run ID %s status is %s. Expected planning or applying", run.ID, run.Status)
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	// The Run must be related to the specified workspace
 	if run.Workspace.ID != workspace.ID {
 		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.ID, workspace.ID)
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	// The account must be a service account.
 	if account.IsServiceAccount == false {
 		msg := fmt.Sprintf("TFE Token must belong to a service account")
-		return fmt.Errorf(msg)
+		return "", fmt.Errorf(msg)
 	}
 
 	log.L().Info(string(run.ID), "info", nil)
 	log.L().Info(string(workspace.ID), "info", nil)
 	log.L().Info(string(account.ID), "info", nil)
 
-	return nil
+	return fmt.Sprintf("%s", run.Status), nil
 }
 
 const pathLoginHelpSyn = `Authenticates the current workspace run ID with Vault.`
