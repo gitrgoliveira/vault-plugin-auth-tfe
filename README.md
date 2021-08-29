@@ -30,14 +30,14 @@ This means you will not need to configure any kind of static secret material for
 ### Retrieving the TFE/TFC token
 The TFE/TFC token lives in more than one place. I recommend using the credentials file location.
 
-The credentials file within the TFE/TFC worker lives one of these 2 places:
+The credentials file within the TFE/TFC worker lives one of these places, depending if you are using Terraform Agents:
  - `/tmp/cli.tfrc` for code run within TFC/TFE
- - `/root/.tfc-agent/component/terraform/runs/${var.TFE_RUN_ID}.[plan|apply]/cli.tfrc` for code running in TFC Agents
-
+ - `${path.cwd}/../.terraformrc` for code running in TFC Agents
 
 The TFE/TFC token also exists as an environment variable *ATLAS_TOKEN*. See [terraform/demo/login_env.tf.example](terraform/demo/login_env.tf.example) for an example of that.
 
-## Vault Authentication conditions
+## Vault Authentication
+### Conditions
 This plugin will issue a token then the following criteria are met:
 
  - The TFE/TFC Token provided has the above mentioned permissions
@@ -46,6 +46,23 @@ This plugin will issue a token then the following criteria are met:
  - The Run ID belongs to the Workspace that is being sent.
  - The Workspace name is in the list of the allowed workspaces for that Role.
  - The Workspace belongs to the TFC/E Organisation configured in the auth nackend
+
+### Vault clients / identity
+This authentication backend can be configured to use/create different entities depending on the run status: `planning` or `applying`.
+
+This means there is an entity metadata entry key `RunStatus` and the display name is changed to `<organization>/<workspace>/<run_status>`
+
+To achieve this behaviour, you need to set `use_run_status` to `true`
+``` bash
+vault write auth/tfe-auth/config organization=<org> use_run_status=true
+```
+
+With this you can issue **read-only** policies/credentials to entities in `planning` mode and higher priveleged credentials for `applying` mode.
+_This is particularly useful when using VCS backed workspaces with speculative plans_.
+
+#### Note
+> This setting may increase your pipeline security, but it will also double up on the number of Vault Clients required per TFC/E Workspace
+
 
 ## Usage / Demo
 
