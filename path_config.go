@@ -13,12 +13,19 @@ func (b *tfeAuthBackend) pathConfig() *framework.Path {
 		Fields: map[string]*framework.FieldSchema{
 			"terraform_host": {
 				Type:        framework.TypeString,
-				Description: "TFE host (e.g. https://app.terraform.io)",
+				Description: "TFE host. Defaults to https://app.terraform.io",
 				Default:     "https://app.terraform.io",
 			},
 			"organization": {
 				Type:        framework.TypeString,
 				Description: "TFE organization allowed to use this backend",
+			},
+			"use_run_status": {
+				Type: framework.TypeBool,
+				Description: `If True, the backend will create different entities for plan and apply.
+These will be have a suffix of "planning" or "applying" accordingly
+Be aware that this will increase your Vault client count.`,
+				Default: false,
 			},
 		},
 		Operations: map[logical.Operation]framework.OperationHandler{
@@ -47,6 +54,7 @@ func (b *tfeAuthBackend) pathConfigWrite(ctx context.Context, req *logical.Reque
 	config := &tfeAuthConfig{
 		Host:         host,
 		Organization: org,
+		UseRunStatus: data.Get("use_run_status").(bool),
 	}
 
 	entry, err := logical.StorageEntryJSON(configPath, config)
@@ -63,8 +71,10 @@ func (b *tfeAuthBackend) pathConfigWrite(ctx context.Context, req *logical.Reque
 type tfeAuthConfig struct {
 	// Host is the url string for the TFE API
 	Host string `json:"host"`
-	// The organization autthorised to use this backend
+	// The organization authorised to use this backend
 	Organization string `json:"organization"`
+	// to append the run status to the created alias and entity
+	UseRunStatus bool `json:"use_run_status"`
 }
 
 func (b *tfeAuthBackend) pathConfigRead(ctx context.Context, req *logical.Request, d *framework.FieldData) (*logical.Response, error) {
@@ -77,6 +87,7 @@ func (b *tfeAuthBackend) pathConfigRead(ctx context.Context, req *logical.Reques
 			Data: map[string]interface{}{
 				"terraform_host": config.Host,
 				"organization":   config.Organization,
+				"use_run_status": config.UseRunStatus,
 			},
 		}
 		return resp, nil

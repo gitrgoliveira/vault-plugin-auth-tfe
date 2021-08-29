@@ -123,6 +123,6 @@ func (b *tfeAuthBackend) config(ctx context.Context, s logical.Storage) (*tfeAut
 }
 
 const backendHelp = `
-The backend is a demo auth backend that returns a Vault token upon
-successful login form a TFC worker
+The backend is an auth backend that returns a Vault token upon
+successful login of a TFC worker
 `

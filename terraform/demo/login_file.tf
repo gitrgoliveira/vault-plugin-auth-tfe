@@ -1,6 +1,6 @@
 #  helpers to figure out the TFC Agent file path
 provider "vault" {
-  address    = "http://87.64.188.107:8200"
+  address    = var.VAULT_ADDR
   token_name = "terraform-${var.TFE_RUN_ID}"
   auth_login {
     path = "auth/tfe-auth/login"

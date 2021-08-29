@@ -11,7 +11,7 @@ vault write aws/config/root \
    region=us-east-1
 
 vault write aws/roles/deploy \
-   role_arns=arn:aws:iam::711129375688:role/ec2-admin-role \
+   role_arns=arn:aws:iam::711129375688:role/ricardo_se_demo \
    credential_type=assumed_role \
    default_sts_ttl=1800 \
    max_sts_ttl=3600

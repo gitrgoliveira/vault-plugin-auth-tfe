@@ -20,7 +20,7 @@ path "aws/sts/deploy" {
 EOF
 
 vault auth enable -path=tfe-auth vault-plugin-auth-tfe
-vault write auth/tfe-auth/config organization=hc-emea-sentinel-demo
+vault write auth/tfe-auth/config organization=hc-emea-sentinel-demo use_run_status=true
 # vault write auth/tfe-auth/config organization=org2 \
 #     terraform_host=https://tfe.ric.gcp.hashidemos.io
 

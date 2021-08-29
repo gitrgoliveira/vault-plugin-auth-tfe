@@ -11,6 +11,5 @@ variable "TFE_RUN_ID" {
 variable "VAULT_ADDR" {
   type        = string
   description = "Vault address"
-  default     = "http://88.97.2.109:8200"
 }
 
