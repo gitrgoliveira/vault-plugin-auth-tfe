@@ -85,7 +85,8 @@ chmod +x /etc/vault.d/plugins/vault-plugin-auth-tfe
 setcap cap_ipc_lock=+ep /etc/vault.d/plugins/vault-plugin-auth-tfe
 vault plugin register -sha256=84ff2af144de37792d546207e42b618cef027a692bf0d32c324555ba28ca301e auth vault-plugin-auth-tfe
 ```
-You can get the the sha256 sum from [the releases page](https://github.com/gitrgoliveira/vault-plugin-auth-tfe/releases) or from:
+The sha256 sum available from [the releases page](https://github.com/gitrgoliveira/vault-plugin-auth-tfe/releases) only validates the zip file.
+To get the sha256 sum, please run the following command:
 ```bash
 shasum -a 256 /etc/vault.d/plugins/vault-plugin-auth-tfe > /tmp/vault-plugin-auth-tfe.sha256
 ```
