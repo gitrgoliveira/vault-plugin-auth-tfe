@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Pre-plan hook output."
+source vault_login.sh

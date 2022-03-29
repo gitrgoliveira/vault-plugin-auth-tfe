@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Post-plan hook output."
+rm -f ~/.vault-token

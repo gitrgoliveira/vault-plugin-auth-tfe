@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Post-apply hook output."
+rm -f ~/.vault-token
