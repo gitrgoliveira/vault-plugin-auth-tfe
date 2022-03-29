@@ -116,7 +116,7 @@ To login using the tfe auth method, this is the command, but it will not work un
 $ vault write auth/tfe-auth/login role=workspace_role \
 		workspace=$TFC_WORKSPACE_NAME \
 		run-id=$TFC_RUN_ID \
-		atlas-token=$ATLAS_TOKEN
+		tfe-token=$ATLAS_TOKEN
 
 ```
 
