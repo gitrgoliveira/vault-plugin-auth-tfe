@@ -9,7 +9,7 @@
 # }
 
 terraform {
-  backend "remote" {
+  cloud {
     organization = "hc-emea-sentinel-demo"
     workspaces {
       name = "vault-login-demo"
@@ -20,6 +20,5 @@ terraform {
     vault = {
       source = "hashicorp/vault"
     }
-
   }
 }

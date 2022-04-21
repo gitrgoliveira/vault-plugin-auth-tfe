@@ -5,6 +5,9 @@ vault policy write terraform-policy - << EOF
 path "auth/token/create" {
     capabilities = ["update"]
 }
+path "auth/token/lookup-self" {
+    capabilities = ["read"]
+}
 
 path "secret/data/*" {
   capabilities = ["read","create", "delete", "update"]

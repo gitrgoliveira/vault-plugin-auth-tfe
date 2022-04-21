@@ -11,5 +11,13 @@ variable "TFE_RUN_ID" {
 variable "VAULT_ADDR" {
   type        = string
   description = "Vault address"
+  default = ""
 }
+
+variable "VAULT_LOGIN_PATH" {
+  type        = string
+  description = "Vault login path"
+  default = ""
+}
+
 
