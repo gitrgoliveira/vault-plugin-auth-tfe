@@ -42,10 +42,11 @@ This plugin will issue a token then the following criteria are met:
 
  - The TFE/TFC Token provided has the above mentioned permissions
  - The TFE/TFC Token is a *Service account* token
- - The Run ID provided is in the state "planning" or "applying"
  - The Run ID belongs to the Workspace that is being sent.
  - The Workspace name is in the list of the allowed workspaces for that Role.
  - The Workspace belongs to the TFC/E Organisation configured in the auth backend
+
+ _TFE/C tokens are revoked at the end of a Run_
 
 ### Vault clients / identity
 This authentication backend can be configured to use/create different entities depending on the run status: `planning` or `applying`.
