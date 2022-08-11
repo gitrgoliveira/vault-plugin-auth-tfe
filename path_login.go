@@ -260,14 +260,7 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) (string
 	}
 
 	msg := fmt.Sprintf("Run status is %s", run.Status)
-	log.L().Info(msg, "info", nil)
-
-	// Run must be active
-	if run.Status != "applying" &&
-		run.Status != "planning" {
-		msg := fmt.Sprintf("Run ID %s status is %s. Expected planning or applying", run.ID, run.Status)
-		return "", fmt.Errorf(msg)
-	}
+	log.L().Debug(msg, "debug", nil)
 
 	// The Run must be related to the specified workspace
 	if run.Workspace.ID != workspace.ID {
