@@ -1,6 +1,16 @@
+> [!WARNING]
+> You should no longer need this plugin, now that TFC/E has released workspace identity.
+> Please refer to the guides available on HashiCorp's website:
+> * [Dynamic Credentials with the Vault Provider
+](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/vault-configuration)
+> * [Vault-Backed Dynamic Credentials
+](https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/vault-backed)
+
+
+
 # Vault TFE Auth Plugin
 
-The aim of this Vault authentication plugin is to provide Terraform Cloud or Enterprise with a "window of trust", it can use to retrieve secrets from Vault.
+The aim of this Vault authentication plugin is to provide Terraform Cloud or Enterprise with a "window of trust", that can use to retrieve secrets from Vault.
 
 This means you will not need to configure any kind of static secret material for your terraform execution to be able to use Vault.
 
