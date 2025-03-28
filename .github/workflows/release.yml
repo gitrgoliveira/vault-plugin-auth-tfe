@@ -15,12 +15,12 @@ jobs:
         goarch: [amd64]
     steps:
     - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.14
+    - uses: wangyoucao577/go-release-action@v1.53
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
-        goversion: "https://golang.org/dl/go1.15.7.linux-amd64.tar.gz"
+        goversion: "https://golang.org/dl/go1.24.1.linux-amd64.tar.gz"
         project_path: "./cmd/vault-plugin-auth-tfe"
         binary_name: "vault-plugin-auth-tfe"
         sha256sum: TRUE
