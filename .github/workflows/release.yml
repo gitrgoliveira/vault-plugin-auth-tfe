@@ -1,4 +1,6 @@
 name: Create release
+permissions:
+  contents: write
 
 on:
   release:
