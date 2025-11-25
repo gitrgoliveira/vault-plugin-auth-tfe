@@ -12,7 +12,11 @@ import (
 func main() {
 	apiClientMeta := &api.PluginAPIClientMeta{}
 	flags := apiClientMeta.FlagSet()
-	flags.Parse(os.Args[1:])
+	if err := flags.Parse(os.Args[1:]); err != nil {
+		logger := hclog.New(&hclog.LoggerOptions{})
+		logger.Error("failed to parse flags", "error", err)
+		os.Exit(1)
+	}
 
 	tlsConfig := apiClientMeta.GetTLSConfig()
 	tlsProviderFunc := api.VaultPluginTLSProvider(tlsConfig)

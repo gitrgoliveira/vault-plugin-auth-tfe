@@ -125,7 +125,7 @@ func (b *tfeAuthBackend) pathLogin(ctx context.Context, req *logical.Request, da
 	}
 	name := fmt.Sprintf("%s/%s/%s", config.Organization, tfeLogin.Workspace, run_status)
 
-	if config.UseRunStatus == false { // keeping previous behaviour
+	if !config.UseRunStatus { // keeping previous behaviour
 		metadata = map[string]string{
 			"Workspace":    tfeLogin.Workspace,
 			"Organization": config.Organization,
@@ -238,25 +238,25 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) (string
 	client, err := tfe.NewClient(clientConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Error creating client for host %s with token %s -> %s", config.Host, t.TFEToken, string(err.Error()))
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	run, err := client.Runs.Read(ctx, t.RunID)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching RunID %s Info: %s", t.RunID, string(err.Error()))
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	workspace, err := client.Workspaces.Read(ctx, config.Organization, t.Workspace)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching Workspace %s Info -> %s", t.Workspace, string(err.Error()))
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	account, err := client.Users.ReadCurrent(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("Error fetching Account Info for token %s -> %s", t.TFEToken, string(err.Error()))
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	msg := fmt.Sprintf("Run status is %s", run.Status)
@@ -265,20 +265,20 @@ func (t *tfeLogin) lookup(role *roleStorageEntry, config *tfeAuthConfig) (string
 	// The Run must be related to the specified workspace
 	if run.Workspace.ID != workspace.ID {
 		msg := fmt.Sprintf("Workspace ID in Run (%s) and workspace ID (%s) mismatch", run.ID, workspace.ID)
-		return "", fmt.Errorf(msg)
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	// The account must be a service account.
-	if account.IsServiceAccount == false {
-		msg := fmt.Sprintf("TFE Token must belong to a service account")
-		return "", fmt.Errorf(msg)
+	if !account.IsServiceAccount {
+		msg := "TFE Token must belong to a service account"
+		return "", fmt.Errorf("%s", msg)
 	}
 
 	log.L().Info(string(run.ID), "info", nil)
 	log.L().Info(string(workspace.ID), "info", nil)
 	log.L().Info(string(account.ID), "info", nil)
 
-	return fmt.Sprintf("%s", run.Status), nil
+	return string(run.Status), nil
 }
 
 const pathLoginHelpSyn = `Authenticates the current workspace run ID with Vault.`

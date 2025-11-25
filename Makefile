@@ -12,7 +12,9 @@ endif
 
 .DEFAULT_GOAL := all
 
-all: fmt build start
+VAULT_ADDR ?= 127.0.0.1:8200
+
+all: fmt lint vulncheck gosec test-race build
 
 build: fmt
 	GOOS=$(OS) GOARCH="$(GOARCH)" go build -o vault/plugins/vault-plugin-auth-tfe cmd/vault-plugin-auth-tfe/main.go
@@ -21,7 +23,7 @@ start:
 	# run this first -->>> eval $(doormat aws --account se_demos_dev)
 	vault server -dev -dev-root-token-id=root \
 	-dev-plugin-dir=./vault/plugins -log-level=debug \
-	-dev-listen-address=192.168.178.40:8200
+	-dev-listen-address=$(VAULT_ADDR)
 
 enable:
 # fad4d28b6f57ca6a1acd49b948e0a279d805280c461bb29fcb8781e57c1c3562
@@ -50,4 +52,19 @@ test:
 		atlas-token=eJ1fkmbxGLtbNg.atlasv1.GGpvS5FwHsYTBLze9S4Pqsx2ahPc67Ypv8d5XlgHptWQ06dwHRrtnXWb2tyTzIp0860
 
 
-.PHONY: build clean fmt start enable test
+lint:
+	golangci-lint run ./...
+
+vulncheck:
+	govulncheck ./...
+
+gosec:
+	gosec ./...
+
+staticcheck:
+	staticcheck ./...
+
+test-race:
+	go test -race ./...
+
+.PHONY: build clean fmt start enable test lint vulncheck gosec staticcheck test-race
